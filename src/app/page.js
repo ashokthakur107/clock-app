@@ -1,95 +1,86 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client"
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import CountDownTimer from '../components/CountDownTimer';
 
 export default function Home() {
+  const [timers, setTimers] = useState([]);
+  const [newTimer, setNewTimer] = useState({
+    name: '',
+    endTime: '',
+  });
+
+  useEffect(() => {
+    getTimers();
+  }, [])
+  
+
+  const handleInputChange = (e) => {
+    setNewTimer({ ...newTimer, [e.target.name]: e.target.value });
+  };
+
+  const addTimer = async () => {
+    try {
+      const response = await axios.post('/api/timer', newTimer);
+      if(response.data.success){
+        setTimers([...timers, response.data.data]);
+      }
+      setNewTimer({ name: '', endTime: '' });
+    } catch (error) {
+      if(error && error.response && error.response.data && error.response.data.message){
+        alert(error.response.data.message);
+      }
+      console.log("error", error)
+    }
+  };
+
+  const getTimers = async () => {
+    try {
+        const response = await axios.get('/api/timer');
+        if(response.data.success){
+            setTimers(response.data.data);
+        }
+    } catch (error) {
+      console.log("error", error)
+    }
+  };
+
+  const stopTimer = async (id) => {
+    try {
+      const response = await axios.get(`/api/timer/${id}`);
+      return response.data;
+  } catch (error) {
+    console.log("error", error)
+  }
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+    <div>
+      <h1>Countdown Timer</h1>
+      <div>
+        <input
+          type="text"
+          name="name"
+          placeholder="Timer Name"
+          value={newTimer.name}
+          onChange={handleInputChange}
         />
+        <input
+          type="datetime-local"
+          name="endTime"
+          value={newTimer.endTime}
+          onChange={handleInputChange}
+        />
+        <button onClick={addTimer}>Add Timer</button>
       </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div>
+        {timers.map((timer) => (
+          <div key={timer._id}>
+            <h2>{timer.name}</h2>
+            <CountDownTimer timerData={timer} onSaveStop={stopTimer} />
+          </div>
+        ))}
       </div>
-    </main>
+    </div>
   );
 }
