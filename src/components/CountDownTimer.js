@@ -11,14 +11,18 @@ const CountDownTimer = ({ timerData, onSaveStop }) => {
   });
 
   useEffect(() => {
-    if(timerData.activeDuration <= 0){
-      const interval = setInterval(async () => {
-        if(!showstopped){
-          return () => clearInterval(interval);
+    let interval;
+    if (timerData.activeDuration <= 0) {
+      interval = setInterval(async () => {
+        if (!showstopped) {
+          clearInterval(interval);
+          return;
         }
+
         const now = new Date().getTime();
         const target = new Date(timerData.endDateTime).getTime();
         const timeDifference = target - now;
+
         if (timeDifference <= 0) {
           clearInterval(interval);
           setShowstopped(false);
@@ -28,8 +32,9 @@ const CountDownTimer = ({ timerData, onSaveStop }) => {
             minutes: 0,
             seconds: 0,
           });
+
           const res = await onSaveStop(timerData._id);
-          if(res.success){
+          if (res.success) {
             setStoppedAfter(res.data.activeDuration);
           }
         } else {
@@ -41,24 +46,23 @@ const CountDownTimer = ({ timerData, onSaveStop }) => {
           });
         }
       }, 1000);
-  
-      return () => clearInterval(interval);
-    }else{
-          setCountdown({
-            days: 0,
-            hours: 0,
-            minutes: 0,
-            seconds: 0,
-          });
-          setShowstopped(false);
+    } else {
+      setCountdown({
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+      });
+      setShowstopped(false);
     }
-    
+
+    return () => clearInterval(interval);
   }, [timerData, showstopped, onSaveStop]);
 
   const handleStop = async () => {
     setShowstopped(false);
     const res = await onSaveStop(timerData._id);
-    if(res.success){
+    if (res.success) {
       setStoppedAfter(res.data.activeDuration);
     }
   };
@@ -66,9 +70,11 @@ const CountDownTimer = ({ timerData, onSaveStop }) => {
   return (
     <div>
       <div>
-        {countdown.days} days, {countdown.hours} hours, {countdown.minutes} minutes, {countdown.seconds} seconds {(stoppedAfter > 0) ? `Stopped after ${stoppedAfter} seconds` : ''}{(timerData.activeDuration > 0) ? `Stopped after ${timerData.activeDuration} seconds` : ''}
-        {(!showstopped) ? '   (Timer was stopped)' : ''}
-           {(showstopped) ? <button onClick={handleStop}>Stop</button> : null}
+        {countdown.days} days, {countdown.hours} hours, {countdown.minutes} minutes, {countdown.seconds} seconds
+        {stoppedAfter > 0 && ` Stopped after ${stoppedAfter} seconds`}
+        {timerData.activeDuration > 0 && ` Stopped after ${timerData.activeDuration} seconds`}
+        {!showstopped && ' (Timer was stopped)'}
+        {showstopped && <button onClick={handleStop}>Stop</button>}
       </div>
     </div>
   );
