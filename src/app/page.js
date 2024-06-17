@@ -47,12 +47,10 @@ export default function Home() {
 
   const stopTimer = async (id) => {
     try {
-      //const response = await axios.get(`/api/timer/${id}`);
-      //return response.data;
-      return true;
+      const response = await axios.get(`/api/timer/${id}`);
+      return response.data;
   } catch (error) {
-    return true;
-    //console.log("error", error)
+    console.log("error", error)
   }
   };
 
