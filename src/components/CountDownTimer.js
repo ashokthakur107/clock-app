@@ -29,8 +29,8 @@ const CountDownTimer = ({ timerData, onSaveStop }) => {
             seconds: 0,
           });
           const res = await onSaveStop(timerData._id);
-          if(res.success){
-            setStoppedAfter(res.data.activeDuration);
+          if(res){
+            setStoppedAfter(1);
           }
         } else {
           setCountdown({
@@ -58,15 +58,15 @@ const CountDownTimer = ({ timerData, onSaveStop }) => {
   const handleStop = async () => {
     setShowstopped(false);
     const res = await onSaveStop(timerData._id);
-    if(res.success){
-      setStoppedAfter(res.data.activeDuration);
+    if(res){
+      setStoppedAfter(1);
     }
   };
 
   return (
     <div>
       <div>
-        {countdown.days} days, {countdown.hours} hours, {countdown.minutes} minutes, {countdown.seconds} seconds {(stoppedAfter > 0) ? `Stopped after ${stoppedAfter} seconds` : ''}{(timerData.activeDuration > 0) ? `Stopped after ${timerData.activeDuration} seconds` : ''}
+        {countdown.days} days, {countdown.hours} hours, {countdown.minutes} minutes, {countdown.seconds} seconds {(timerData.activeDuration > 0) ? `Stopped after ${timerData.activeDuration} seconds` : ''}
         {(!showstopped) ? '   (Timer was stopped)' : ''}
            {(showstopped) ? <button onClick={handleStop}>Stop</button> : null}
       </div>
