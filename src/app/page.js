@@ -12,7 +12,8 @@ export default function Home() {
 
   useEffect(() => {
     getTimers();
-  }, []);
+  }, [])
+  
 
   const handleInputChange = (e) => {
     setNewTimer({ ...newTimer, [e.target.name]: e.target.value });
@@ -21,26 +22,26 @@ export default function Home() {
   const addTimer = async () => {
     try {
       const response = await axios.post('/api/timer', newTimer);
-      if (response.data.success) {
+      if(response.data.success){
         setTimers([...timers, response.data.data]);
       }
       setNewTimer({ name: '', endTime: '' });
     } catch (error) {
-      if (error && error.response && error.response.data && error.response.data.message) {
+      if(error && error.response && error.response.data && error.response.data.message){
         alert(error.response.data.message);
       }
-      console.log("error", error);
+      console.log("error", error)
     }
   };
 
   const getTimers = async () => {
     try {
-      const response = await axios.get('/api/timer');
-      if (response.data.success) {
-        setTimers(response.data.data);
-      }
+        const response = await axios.get('/api/timer');
+        if(response.data.success){
+            setTimers(response.data.data);
+        }
     } catch (error) {
-      console.log("error", error);
+      console.log("error", error)
     }
   };
 
@@ -48,9 +49,9 @@ export default function Home() {
     try {
       const response = await axios.get(`/api/timer/${id}`);
       return response.data;
-    } catch (error) {
-      console.log("error", error);
-    }
+  } catch (error) {
+    console.log("error", error)
+  }
   };
 
   return (
