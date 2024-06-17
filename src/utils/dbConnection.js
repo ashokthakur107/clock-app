@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = 'mongodb://localhost:27017/db_clock_app';;
+const MONGODB_URI = 'mongodb+srv://ashok_db:Dnx8F0WfWsRL8DK@clock-app.gwhonkx.mongodb.net/db_clock_app?retryWrites=true&w=majority&appName=clock-app';;
 let cached = global.mongoose;
 
 if (!cached) {
