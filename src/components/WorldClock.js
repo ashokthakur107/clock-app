@@ -16,7 +16,7 @@ const WorldClock = () => {
             clearInterval(intervalRef.currentTime);
         }
         try {
-            const response = await axios.get(`http://worldtimeapi.org/api/timezone/${event.target.value}`);
+            const response = await axios.get(`https://worldtimeapi.org/api/timezone/${event.target.value}`);
             const dateTime = new Date(response.data.datetime);
             setTime(dateTime);
             intervalRef.currentTime = setInterval(() => {
